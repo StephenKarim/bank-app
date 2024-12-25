@@ -1,0 +1,122 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model RelegatedGroup {
+  rimNumber            String              @id @unique
+  generalInformation   GeneralInformation? @relation(fields: [generalInformationId], references: [id])
+  generalInformationId Int?                @unique
+  debtors              Debtor[]            @relation("DebtorGroup")
+  liabilities          Liability[]         @relation("GroupLiabilities")
+  securities           Security[]          @relation("GroupSecurities")
+  unchargedAccounts    Account[]           @relation("UnchargedAccounts")
+  connectedAccounts    Account[]           @relation("ConnectedAccounts")
+  createdAt            DateTime            @default(now())
+  updatedAt            DateTime            @updatedAt
+}
+
+model GeneralInformation {
+  id              Int             @id @default(autoincrement())
+  rimNumber       String          @unique
+  date            DateTime
+  branch          String
+  address1        String
+  address2        String
+  country         String
+  cautionCategory String
+  cautionDate     DateTime
+  status          String          @default("NEW")
+
+  relegatedGroup  RelegatedGroup? @relation
+  createdAt       DateTime        @default(now())
+  updatedAt       DateTime        @updatedAt
+}
+
+model Debtor {
+  id               Int             @id @default(autoincrement())
+  groupRimNumber   String
+  lastName         String
+  firstName        String
+  role             String
+  employer         String
+  occupation       String
+
+  // Identification fields stored directly on Debtor
+  passport         String?
+  driversPermit    String?
+  nationalID       String?
+
+  // Relations to other models
+  liabilities      Liability[]     @relation("DebtorLiabilities")
+  accounts         Account[]       @relation("DebtorAccounts")
+  securities       Security[]      @relation("DebtorSecurities")
+  group            RelegatedGroup  @relation("DebtorGroup", fields: [groupRimNumber], references: [rimNumber])
+
+  createdAt        DateTime        @default(now())
+  updatedAt        DateTime        @updatedAt
+}
+
+model Liability {
+  id             Int            @id @default(autoincrement())
+  type           String
+  number         String
+  debtors        Debtor[]       @relation("DebtorLiabilities")
+  limitCurrency  String
+  limitValue     Float
+  expiryDate     DateTime
+  rate           Float
+  liabilities    Float
+  idcd           Float
+  statuteBarred  DateTime
+
+  group          RelegatedGroup @relation("GroupLiabilities", fields: [groupRimNumber], references: [rimNumber])
+  groupRimNumber String
+
+  createdAt      DateTime       @default(now())
+  updatedAt      DateTime       @updatedAt
+}
+
+model Security {
+  id             Int            @id @default(autoincrement())
+  description    String
+  rstc           Float
+  mv             Float
+  use            String
+  demand         String
+  secures        String
+  advertised     Boolean
+  dateAdvertised DateTime
+  valuation      Float
+  debtors        Debtor[]       @relation("DebtorSecurities")
+
+  group          RelegatedGroup @relation("GroupSecurities", fields: [groupRimNumber], references: [rimNumber])
+  groupRimNumber String
+
+  createdAt      DateTime       @default(now())
+  updatedAt      DateTime       @updatedAt
+}
+
+model Account {
+  id               Int             @id @default(autoincrement())
+  branch           String
+  type             String
+  accountNumber    String
+  balance          Float
+  debtors          Debtor[]        @relation("DebtorAccounts")
+
+  // Optional relation for uncharged accounts
+  unchargedGroup   RelegatedGroup? @relation("UnchargedAccounts", fields: [unchargedGroupId], references: [rimNumber])
+  unchargedGroupId String?
+
+  // Optional relation for connected accounts
+  connectedGroup   RelegatedGroup? @relation("ConnectedAccounts", fields: [connectedGroupId], references: [rimNumber])
+  connectedGroupId String?
+
+  createdAt        DateTime        @default(now())
+  updatedAt        DateTime        @updatedAt
+}
