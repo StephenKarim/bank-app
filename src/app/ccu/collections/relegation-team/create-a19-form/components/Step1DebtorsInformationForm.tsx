@@ -231,9 +231,9 @@ export default function Step1DebtorsInformationForm({
       </div>
 
       {/* Main Container: Form on left, Table on right (responsive) */}
-      <div className="flex flex-wrap md:flex-nowrap gap-4">
+      <div className="flex flex-wrap xl:flex-nowrap gap-4">
         {/* Left Column: Debtor Form */}
-        <div className="w-full md:w-1/2">
+        <div className="w-full min-w-[400px] max-w-[600px]">
           <h2 className="text-xl font-bold mb-4">Debtors Information</h2>
           {/* Possibly display the "Please add at least one debtor" error if it exists */}
           {debtorErrors.identification ===
@@ -325,7 +325,7 @@ export default function Step1DebtorsInformationForm({
                 <input
                   type="text"
                   name="passport"
-                  placeholder="PASSPORT (MAX 12)"
+                  placeholder="PASSPORT"
                   value={debtor.identification.passport || ""}
                   onChange={handleInputChange}
                   className="p-2 border rounded text-sm"
@@ -335,7 +335,7 @@ export default function Step1DebtorsInformationForm({
                 <input
                   type="text"
                   name="driversPermit"
-                  placeholder="DRIVERS PERMIT (MAX 12)"
+                  placeholder="DRIVERS PERMIT"
                   value={debtor.identification.driversPermit || ""}
                   onChange={handleInputChange}
                   className="p-2 border rounded text-sm"
@@ -345,7 +345,7 @@ export default function Step1DebtorsInformationForm({
                 <input
                   type="text"
                   name="nationalID"
-                  placeholder="NATIONAL ID (MAX 11 DIGITS)"
+                  placeholder="NATIONAL ID"
                   value={debtor.identification.nationalID || ""}
                   onChange={handleInputChange}
                   className="p-2 border rounded text-sm"
@@ -381,7 +381,7 @@ export default function Step1DebtorsInformationForm({
         </div>
 
         {/* Right Column: Existing Debtors Table */}
-        <div className="w-full md:w-1/2">
+        <div className="w-full justify-end">
           {data.length > 0 && (
             <div className="mt-6 md:mt-0">
               <h3 className="text-lg font-bold mb-4">EXISTING DEBTORS</h3>
