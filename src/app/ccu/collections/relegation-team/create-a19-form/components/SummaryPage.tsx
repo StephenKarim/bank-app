@@ -18,6 +18,8 @@ interface SummaryPageProps {
     provision: number;
   };
   onBack: () => void;
+  // New prop for clearing the form data
+  onResetForm?: () => void;
 }
 
 export default function SummaryPage({
@@ -64,7 +66,7 @@ export default function SummaryPage({
   };
 
   // Handle POST to /api/relegatedGroups
-  const handleConfirm = async () => {
+  const handlePost = async () => {
     try {
       const payload = {
         generalInformation: {
@@ -163,6 +165,15 @@ export default function SummaryPage({
     window.print();
   };
 
+  /**
+   * Add Another: if you only want to refresh the page instead of calling
+   * onResetForm, just do a window.location.reload() below.
+   */
+  const handleAddAnother = () => {
+    // CHANGED to simply reload the page
+    window.location.reload();
+  };
+
   // Helper for displaying a list of D# debtors
   const mapDebtorsToDisplay = (debtorArray: string[] = []) => {
     if (debtorArray.length === 0) return "";
@@ -195,13 +206,26 @@ export default function SummaryPage({
           >
             Back
           </button>
+
+          {/* Post button (was Confirm and Submit) */}
           <button
             type="button"
-            onClick={handleConfirm}
+            onClick={handlePost}
             className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
           >
-            Confirm and Submit
+            Post
           </button>
+
+          {/* Add Another: now simply reloads the page */}
+          <button
+            type="button"
+            onClick={handleAddAnother}
+            className="px-4 py-2 bg-purple-600 text-white rounded hover:bg-purple-700"
+          >
+            Add Another
+          </button>
+
+          {/* Print -> Save as PDF */}
           <button
             type="button"
             onClick={handlePrint}
