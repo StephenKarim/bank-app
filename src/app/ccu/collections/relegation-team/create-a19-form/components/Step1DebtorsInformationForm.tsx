@@ -208,7 +208,7 @@ export default function Step1DebtorsInformationForm({
   };
 
   return (
-    <div className="p-4 md:p-6 bg-white rounded shadow">
+    <div className="p-4 md:p-6 bg-white rounded text-black shadow">
       {/* Top Nav Buttons side by side (left) */}
       <div className="flex items-center gap-4 mb-4">
         <button
