@@ -233,7 +233,7 @@ export default function Step1DebtorsInformationForm({
       {/* Main Container: Form on left, Table on right (responsive) */}
       <div className="flex flex-wrap xl:flex-nowrap gap-4">
         {/* Left Column: Debtor Form */}
-        <div className="w-full min-w-[400px] max-w-[600px]">
+        <div className="w-full max-w-[600px]">
           <h2 className="text-xl font-bold mb-4">Debtors Information</h2>
           {/* Possibly display the "Please add at least one debtor" error if it exists */}
           {debtorErrors.identification ===
