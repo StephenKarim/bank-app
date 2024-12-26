@@ -54,7 +54,7 @@ export default function ClassifiedDebtsPage() {
               <Link
                 key={sub.name}
                 href={sub.link}
-                className="block px-6 py-3 rounded bg-purple-600 text-white text-lg font-semibold hover:bg-purple-700 transition"
+                className="block px-6 py-3 rounded bg-[#1e99c6] text-white text-lg font-semibold hover:bg-[#95348D] transition"
               >
                 {sub.name}
               </Link>

@@ -12,6 +12,7 @@ import Step3SecuritiesForm, {
   Security,
 } from "./components/Step3SecuritiesForm";
 import SummaryPage from "./components/SummaryPage";
+import Link from "next/link";
 
 // ----------------- Types ------------------
 
@@ -128,86 +129,109 @@ export default function CreateA19Form() {
   };
 
   return (
+    <>
+    <header className="bg-white shadow-sm">
+          <div className="max-w-6xl mx-auto px-4 py-4 flex items-center justify-between animate-fadeInNoMove">
+            <h1 className="text-xl font-bold text-gray-800">Relegation Team</h1>
+            <nav className="space-x-4">
+              {/* Link back to Collections */}
+              <Link
+                href="/ccu/collections"
+                className="text-sm text-gray-600 hover:text-gray-900 transition"
+              >
+                Collections
+              </Link>
+              {/* Link to Dashboard */}
+              <Link
+                href="/dashboard"
+                className="text-sm text-gray-600 hover:text-gray-900 transition"
+              >
+                Dashboard
+              </Link>
+            </nav>
+          </div>
+        </header>
     <div className="min-h-screen p-8 bg-gray-100">
       <h1 className="text-3xl font-bold mb-6">Create A19 Form</h1>
 
       {step === 1 && (
         <Step1GeneralInformationForm
-          data={generalInformation}
-          setData={setGeneralInformation}
-          onNext={handleNext}
+        data={generalInformation}
+        setData={setGeneralInformation}
+        onNext={handleNext}
         />
       )}
 
       {step === 2 && (
         <Step1DebtorsInformationForm
-          data={debtors}
-          setData={setDebtors}
-          onNext={handleNext}
-          onBack={handleBack}
+        data={debtors}
+        setData={setDebtors}
+        onNext={handleNext}
+        onBack={handleBack}
         />
       )}
 
       {/* Step 3: Liability Details */}
       {step === 3 && (
         <Step2LiabilityDetailsForm
-          accounts={liabilities} // <--- We pass liabilities here
-          setAccounts={setLiabilities} // <--- so the child can modify them
-          calculations={calculations}
-          setCalculations={setCalculations}
-          onNext={handleNext}
-          onBack={handleBack}
-          debtors={debtors}
+        accounts={liabilities} // <--- We pass liabilities here
+        setAccounts={setLiabilities} // <--- so the child can modify them
+        calculations={calculations}
+        setCalculations={setCalculations}
+        onNext={handleNext}
+        onBack={handleBack}
+        debtors={debtors}
         />
       )}
 
       {/* Step 4: Uncharged Credit Balances */}
       {step === 4 && (
         <Step2UnchargedCreditBalancesForm
-          accounts={unchargedAccounts}
-          setAccounts={setUnchargedAccounts}
-          onNext={handleNext}
-          onBack={handleBack}
-          debtors={debtors}
+        accounts={unchargedAccounts}
+        setAccounts={setUnchargedAccounts}
+        onNext={handleNext}
+        onBack={handleBack}
+        debtors={debtors}
         />
       )}
 
       {/* Step 5: Other Liabilities */}
       {step === 5 && (
         <Step2OtherLiabilitiesForm
-          accounts={connectedAccounts}
-          setAccounts={setConnectedAccounts}
-          onNext={handleNext}
-          onBack={handleBack}
-          debtors={debtors}
+        accounts={connectedAccounts}
+        setAccounts={setConnectedAccounts}
+        onNext={handleNext}
+        onBack={handleBack}
+        debtors={debtors}
         />
       )}
 
       {/* Step 6: Securities */}
       {step === 6 && (
         <Step3SecuritiesForm
-          data={securities}
-          setData={setSecurities}
-          onSubmit={handleSubmit}
-          onNext={handleNext}
-          onBack={handleBack}
-          debtors={debtors}
+        data={securities}
+        setData={setSecurities}
+        onSubmit={handleSubmit}
+        onNext={handleNext}
+        onBack={handleBack}
+        debtors={debtors}
         />
       )}
 
       {/* Step 7: Summary */}
       {step === 7 && (
         <SummaryPage
-          generalInformation={generalInformation}
-          debtors={debtors}
-          liabilities={liabilities}
-          unchargedAccounts={unchargedAccounts}
-          connectedAccounts={connectedAccounts}
-          securities={securities}
-          calculations={calculations}
-          onBack={handleBack}
+        generalInformation={generalInformation}
+        debtors={debtors}
+        liabilities={liabilities}
+        unchargedAccounts={unchargedAccounts}
+        connectedAccounts={connectedAccounts}
+        securities={securities}
+        calculations={calculations}
+        onBack={handleBack}
         />
       )}
     </div>
+      </>
   );
 }
