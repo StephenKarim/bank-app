@@ -280,7 +280,7 @@ export default function Step3SecuritiesForm({
 
       <div className="flex flex-wrap md:flex-nowrap gap-4">
         {/* Left Column: Form */}
-        <div className="w-full md:w-1/2">
+        <div className="w-full max:w-[600px]">
           <h2 className="text-xl font-bold mb-4">
             {editingIndex === null ? "ADD SECURITY" : "EDIT SECURITY"}
           </h2>
@@ -442,7 +442,7 @@ export default function Step3SecuritiesForm({
         </div>
 
         {/* Right Column: Existing Securities Table */}
-        <div className="w-full md:w-1/2">
+        <div className="w-full">
           {data.length > 0 && (
             <div className="mt-6 md:mt-0">
               <h3 className="text-lg font-bold mb-4">EXISTING SECURITIES</h3>

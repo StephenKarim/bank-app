@@ -243,7 +243,7 @@ export default function Step2UnchargedCreditBalancesForm({
 
       <div className="flex flex-wrap md:flex-nowrap gap-4">
         {/* Left Column: Form */}
-        <div className="w-full md:w-1/2">
+        <div className="w-full max:w-[600px]">
           <h3 className="text-lg font-bold mb-2">
             {editingIndex === null ? "Add Account" : "Edit Account"}
           </h3>
@@ -343,7 +343,7 @@ export default function Step2UnchargedCreditBalancesForm({
         </div>
 
         {/* Right Column: Table */}
-        <div className="w-full md:w-1/2">
+        <div className="w-full">
           {accounts.length > 0 && (
             <div className="mt-6 md:mt-0">
               <h3 className="text-lg font-bold mb-4">Existing Accounts</h3>

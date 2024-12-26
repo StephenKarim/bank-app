@@ -381,7 +381,7 @@ export default function Step1DebtorsInformationForm({
         </div>
 
         {/* Right Column: Existing Debtors Table */}
-        <div className="w-full justify-end">
+        <div className="w-full">
           {data.length > 0 && (
             <div className="mt-6 md:mt-0">
               <h3 className="text-lg font-bold mb-4">EXISTING DEBTORS</h3>

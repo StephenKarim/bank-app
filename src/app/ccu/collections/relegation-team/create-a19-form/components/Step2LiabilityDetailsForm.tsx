@@ -400,7 +400,7 @@ export default function Step2LiabilityDetailsForm({
 
       <div className="flex flex-wrap md:flex-nowrap gap-4">
         {/* Left Column: Less: Security Held + Form */}
-        <div className="w-full md:w-1/2">
+        <div className="w-full max-w-[600px]">
           <h2 className="text-xl font-bold mb-2">FACILITY &amp; ACCOUNT NO.</h2>
 
           {/* Less: Security Held */}
@@ -605,7 +605,7 @@ export default function Step2LiabilityDetailsForm({
         </div>
 
         {/* Right Column: Table + Summary Underneath */}
-        <div className="w-full md:w-1/2">
+        <div className="w-full">
           {accounts.length > 0 && (
             <div className="mt-6 md:mt-0">
               <h3 className="text-lg font-bold mb-4">EXISTING ACCOUNTS</h3>
