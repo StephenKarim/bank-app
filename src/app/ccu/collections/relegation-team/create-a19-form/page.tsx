@@ -3,12 +3,17 @@
 import { useState } from "react";
 import Step1GeneralInformationForm from "./components/Step1GeneralInformationForm";
 import Step1DebtorsInformationForm from "./components/Step1DebtorsInformationForm";
+// Updated import:
 import Step2LiabilityDetailsForm from "./components/Step2LiabilityDetailsForm";
+
 import Step2UnchargedCreditBalancesForm from "./components/Step2UnchargedCreditBalancesForm";
 import Step2OtherLiabilitiesForm from "./components/Step2OtherLiabilitiesForm";
-import Step3SecuritiesForm from "./components/Step3SecuritiesForm";
-import { Security } from "./components/Step3SecuritiesForm";
+import Step3SecuritiesForm, {
+  Security,
+} from "./components/Step3SecuritiesForm";
 import SummaryPage from "./components/SummaryPage";
+
+// ----------------- Types ------------------
 
 export type GeneralInformation = {
   rimNumber: string;
@@ -35,11 +40,13 @@ export type Debtor = {
   occupation: string;
 };
 
+// Add an optional `id` so we can edit each liability by ID
 export type Liability = {
+  id?: string;
   type: string;
   number: string;
   debtors: string[]; // Debtor IDs assigned to the liability
-  limit: { currency: "USD" | "TTD"; value: string };
+  limit: { currency: string; value: string };
   expiryDate: string;
   rate: string;
   liabilities: string;
@@ -60,12 +67,15 @@ export type Account = {
   type: string;
   accountNumber: string;
   balance: string;
-  debtors: string[]; // Debtor IDs assigned to the account
+  debtors: string[];
 };
+
+// ----------------- Main Component ------------------
 
 export default function CreateA19Form() {
   const [step, setStep] = useState(1);
 
+  // ----------------- Step 1: General Info ------------------
   const [generalInformation, setGeneralInformation] =
     useState<GeneralInformation>({
       rimNumber: "",
@@ -78,10 +88,14 @@ export default function CreateA19Form() {
       cautionDate: "",
     });
 
+  // ----------------- Step 1: Debtors ------------------
   const [debtors, setDebtors] = useState<Debtor[]>([]);
 
+  // ----------------- Step 2: Liabilities ------------------
   const [liabilities, setLiabilities] = useState<Liability[]>([]);
 
+  // We store Less: Security Held in "calculations.lessSecurityHeld"
+  // so it persists across steps.
   const [calculations, setCalculations] = useState<Calculations>({
     total: 0,
     lessIDCD: 0,
@@ -90,14 +104,18 @@ export default function CreateA19Form() {
     provision: 0,
   });
 
+  // ----------------- Step 2: Uncharged / Other Liabilities ------------------
   const [unchargedAccounts, setUnchargedAccounts] = useState<Account[]>([]);
   const [connectedAccounts, setConnectedAccounts] = useState<Account[]>([]);
 
+  // ----------------- Step 3: Securities ------------------
   const [securities, setSecurities] = useState<Security[]>([]);
 
+  // Common Next/Back
   const handleNext = () => setStep((prev) => prev + 1);
   const handleBack = () => setStep((prev) => prev - 1);
 
+  // Final Submit (Step 7 -> Summary)
   const handleSubmit = () => {
     console.log("General Information:", generalInformation);
     console.log("Debtors:", debtors);
@@ -130,38 +148,42 @@ export default function CreateA19Form() {
         />
       )}
 
+      {/* Step 3: Liability Details */}
       {step === 3 && (
         <Step2LiabilityDetailsForm
-          accounts={liabilities}
-          setAccounts={setLiabilities}
+          accounts={liabilities} // <--- We pass liabilities here
+          setAccounts={setLiabilities} // <--- so the child can modify them
           calculations={calculations}
           setCalculations={setCalculations}
           onNext={handleNext}
-          onBack={handleBack} // Pass the back handler
+          onBack={handleBack}
           debtors={debtors}
         />
       )}
 
+      {/* Step 4: Uncharged Credit Balances */}
       {step === 4 && (
         <Step2UnchargedCreditBalancesForm
-          accounts={unchargedAccounts} // Passes uncharged accounts
+          accounts={unchargedAccounts}
           setAccounts={setUnchargedAccounts}
           onNext={handleNext}
           onBack={handleBack}
-          debtors={debtors} // Pass debtors dynamically
+          debtors={debtors}
         />
       )}
 
+      {/* Step 5: Other Liabilities */}
       {step === 5 && (
         <Step2OtherLiabilitiesForm
-          accounts={connectedAccounts} // Passes connected accounts
+          accounts={connectedAccounts}
           setAccounts={setConnectedAccounts}
           onNext={handleNext}
           onBack={handleBack}
-          debtors={debtors} // Pass debtors dynamically
+          debtors={debtors}
         />
       )}
 
+      {/* Step 6: Securities */}
       {step === 6 && (
         <Step3SecuritiesForm
           data={securities}
@@ -169,10 +191,11 @@ export default function CreateA19Form() {
           onSubmit={handleSubmit}
           onNext={handleNext}
           onBack={handleBack}
-          debtors={debtors} // Pass debtors dynamically
+          debtors={debtors}
         />
       )}
 
+      {/* Step 7: Summary */}
       {step === 7 && (
         <SummaryPage
           generalInformation={generalInformation}

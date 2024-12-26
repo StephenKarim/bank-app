@@ -181,7 +181,7 @@ export async function POST(req: NextRequest) {
             secures: sec.secures,
             advertised: sec.advertised,
             dateAdvertised: new Date(sec.dateAdvertised),
-            valuation: sec.valuation,
+            valuation: new Date(sec.dateAdvertised),
             ...(debtorIds.length
               ? {
                   debtors: {

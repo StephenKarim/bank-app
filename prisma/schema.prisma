@@ -91,7 +91,7 @@ model Security {
   secures        String
   advertised     Boolean
   dateAdvertised DateTime
-  valuation      Float
+  valuation      DateTime
   debtors        Debtor[]       @relation("DebtorSecurities")
 
   group          RelegatedGroup @relation("GroupSecurities", fields: [groupRimNumber], references: [rimNumber])

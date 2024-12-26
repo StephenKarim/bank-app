@@ -22,32 +22,81 @@ export default function Step1GeneralInformationForm({
   setData: React.Dispatch<React.SetStateAction<GeneralInformation>>;
   onNext: () => void;
 }) {
-  const [error, setError] = useState<string | null>(null);
+  // Field-level errors stored here
+  const [generalInfoErrors, setGeneralInfoErrors] = useState<{
+    rimNumber?: string;
+    date?: string;
+    branch?: string;
+    country?: string;
+    cautionCategory?: string;
+    cautionDate?: string;
+  }>({});
 
+  // Handle all input changes
   const handleInputChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
   ) => {
-    const { name, value } = e.target;
+    // Use const for name, let for value
+    const name = e.target.name;
+    let value = e.target.value;
+
+    // Convert RIM Number to digits only (max 12)
+    if (name === "rimNumber") {
+      value = value.replace(/\D/g, "").slice(0, 12);
+    } else if (
+      name === "branch" ||
+      name === "address1" ||
+      name === "address2"
+    ) {
+      // As per your previous pattern, uppercase certain text fields
+      value = value.toUpperCase();
+    }
+
     setData((prev) => ({ ...prev, [name]: value }));
   };
 
+  // Validate all required fields; return an object with field-level errors
   const validateForm = () => {
-    if (!data.rimNumber.trim()) return "RIM Number is required.";
-    if (!data.date.trim()) return "Relegated Date is required.";
-    if (!data.branch.trim()) return "Branch is required.";
-    if (!data.country.trim()) return "Country is required.";
-    if (!data.cautionCategory.trim()) return "Caution Category is required.";
-    if (!data.cautionDate.trim()) return "Caution Date is required.";
-    return null;
+    const errors: {
+      rimNumber?: string;
+      date?: string;
+      branch?: string;
+      country?: string;
+      cautionCategory?: string;
+      cautionDate?: string;
+    } = {};
+
+    if (!data.rimNumber.trim()) {
+      errors.rimNumber = "RIM Number is required (digits only, max 12).";
+    }
+    if (!data.date.trim()) {
+      errors.date = "Relegated Date is required.";
+    }
+    if (!data.branch.trim()) {
+      errors.branch = "Branch is required.";
+    }
+    if (!data.country.trim()) {
+      errors.country = "Country is required.";
+    }
+    if (!data.cautionCategory.trim()) {
+      errors.cautionCategory = "Caution Category is required.";
+    }
+    if (!data.cautionDate.trim()) {
+      errors.cautionDate = "Caution Date is required.";
+    }
+
+    return errors;
   };
 
+  // On form submit
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    const validationError = validateForm();
-    if (validationError) {
-      setError(validationError);
+    const errorsObj = validateForm();
+
+    if (Object.keys(errorsObj).length > 0) {
+      setGeneralInfoErrors(errorsObj);
     } else {
-      setError(null);
+      setGeneralInfoErrors({});
       onNext();
     }
   };
@@ -58,20 +107,29 @@ export default function Step1GeneralInformationForm({
       className="max-w-lg mx-auto bg-white p-6 rounded shadow"
     >
       <h2 className="text-xl font-bold mb-4">General Information</h2>
-      {error && <p className="text-red-500 mb-4">{error}</p>}
-      <div className="flex flex-col gap-4">
+
+      {/* RIM Number */}
+      <div className="flex flex-col mb-2">
         <input
           type="text"
           name="rimNumber"
-          placeholder="RIM Number"
+          placeholder="RIM Number (digits only, max 12)"
           value={data.rimNumber}
           onChange={handleInputChange}
           className="p-2 border rounded"
         />
+        {generalInfoErrors.rimNumber && (
+          <p className="text-red-500 text-sm mt-1">
+            {generalInfoErrors.rimNumber}
+          </p>
+        )}
+      </div>
 
-        <label htmlFor="date" className="text-sm font-semibold">
-          Relegated Date
-        </label>
+      {/* Date */}
+      <label htmlFor="date" className="text-sm font-semibold">
+        Relegated Date
+      </label>
+      <div className="flex flex-col mb-2">
         <input
           type="date"
           name="date"
@@ -80,7 +138,13 @@ export default function Step1GeneralInformationForm({
           onChange={handleInputChange}
           className="p-2 border rounded"
         />
+        {generalInfoErrors.date && (
+          <p className="text-red-500 text-sm mt-1">{generalInfoErrors.date}</p>
+        )}
+      </div>
 
+      {/* Branch */}
+      <div className="flex flex-col mb-2">
         <input
           type="text"
           name="branch"
@@ -89,7 +153,15 @@ export default function Step1GeneralInformationForm({
           onChange={handleInputChange}
           className="p-2 border rounded"
         />
+        {generalInfoErrors.branch && (
+          <p className="text-red-500 text-sm mt-1">
+            {generalInfoErrors.branch}
+          </p>
+        )}
+      </div>
 
+      {/* Address1 */}
+      <div className="flex flex-col mb-2">
         <input
           type="text"
           name="address1"
@@ -98,7 +170,11 @@ export default function Step1GeneralInformationForm({
           onChange={handleInputChange}
           className="p-2 border rounded"
         />
+        {/* address1 is optional, so no error displayed */}
+      </div>
 
+      {/* Address2 */}
+      <div className="flex flex-col mb-2">
         <input
           type="text"
           name="address2"
@@ -107,10 +183,14 @@ export default function Step1GeneralInformationForm({
           onChange={handleInputChange}
           className="p-2 border rounded"
         />
+        {/* address2 is optional, so no error displayed */}
+      </div>
 
-        <label htmlFor="country" className="text-sm font-semibold">
-          Country
-        </label>
+      {/* Country */}
+      <label htmlFor="country" className="text-sm font-semibold">
+        Country
+      </label>
+      <div className="flex flex-col mb-2">
         <select
           name="country"
           id="country"
@@ -131,7 +211,15 @@ export default function Step1GeneralInformationForm({
           <option value="TRINIDAD">TRINIDAD</option>
           <option value="TOBAGO">TOBAGO</option>
         </select>
+        {generalInfoErrors.country && (
+          <p className="text-red-500 text-sm mt-1">
+            {generalInfoErrors.country}
+          </p>
+        )}
+      </div>
 
+      {/* Caution Category */}
+      <div className="flex flex-col mb-2">
         <select
           name="cautionCategory"
           value={data.cautionCategory}
@@ -143,10 +231,18 @@ export default function Step1GeneralInformationForm({
           <option value="B">B</option>
           <option value="C">C</option>
         </select>
+        {generalInfoErrors.cautionCategory && (
+          <p className="text-red-500 text-sm mt-1">
+            {generalInfoErrors.cautionCategory}
+          </p>
+        )}
+      </div>
 
-        <label htmlFor="cautionDate" className="text-sm font-semibold">
-          Caution Date
-        </label>
+      {/* Caution Date */}
+      <label htmlFor="cautionDate" className="text-sm font-semibold">
+        Caution Date
+      </label>
+      <div className="flex flex-col mb-4">
         <input
           type="date"
           name="cautionDate"
@@ -155,14 +251,19 @@ export default function Step1GeneralInformationForm({
           onChange={handleInputChange}
           className="p-2 border rounded"
         />
-
-        <button
-          type="submit"
-          className="p-2 bg-blue-600 text-white rounded hover:bg-blue-700"
-        >
-          Next
-        </button>
+        {generalInfoErrors.cautionDate && (
+          <p className="text-red-500 text-sm mt-1">
+            {generalInfoErrors.cautionDate}
+          </p>
+        )}
       </div>
+
+      <button
+        type="submit"
+        className="p-2 bg-blue-600 text-white rounded hover:bg-blue-700"
+      >
+        Next
+      </button>
     </form>
   );
 }
