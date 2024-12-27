@@ -1,48 +1,116 @@
-/* File: /src/app/api/ccuClassifiedDebts/route.ts */
 import { NextResponse } from "next/server";
-import { PrismaClient } from "@prisma/client";
-
-// You could import type RelegatedGroup, Liability if needed for custom types
-// import type { RelegatedGroup, Liability } from "@prisma/client";
+import { PrismaClient, Prisma } from "@prisma/client";
 
 const prisma = new PrismaClient();
 
-export async function GET() {
+// Default page size
+const DEFAULT_PAGE_SIZE = 10;
+
+// Fields allowed for sorting
+const ALLOWED_SORT_FIELDS = ["createdAt", "rimNumber", "branch"];
+
+export async function GET(request: Request) {
   try {
-    // 1) Fetch all RelegatedGroups
-    const rawGroups = await prisma.relegatedGroup.findMany({
-      include: {
-        generalInformation: true,
-        debtors: {
-          take: 1, // only the first Debtor
-          orderBy: { id: "asc" },
-        },
-        liabilities: true, // we'll sum 'liabilities' field from each
-      },
-      orderBy: {
-        createdAt: "desc",
+    const { searchParams } = new URL(request.url);
+
+    // Pagination
+    const page = parseInt(searchParams.get("page") || "1", 10);
+    const take = parseInt(
+      searchParams.get("pageSize") || String(DEFAULT_PAGE_SIZE),
+      10
+    );
+    const skip = (page - 1) * take;
+
+    // Sorting
+    const sortBy = searchParams.get("sortBy") || "createdAt";
+    const sortOrder = (searchParams.get("sortOrder") ||
+      "desc") as Prisma.SortOrder;
+    const orderByField = ALLOWED_SORT_FIELDS.includes(sortBy)
+      ? sortBy
+      : "createdAt";
+
+    // Simple filtering by rimNumber or branch
+    const filter = searchParams.get("filter") || "";
+
+    // Count total for pagination
+    const totalCount = await prisma.relegatedGroup.count({
+      where: {
+        OR: [
+          { rimNumber: { contains: filter, mode: "insensitive" } },
+          {
+            generalInformation: {
+              branch: { contains: filter, mode: "insensitive" },
+            },
+          },
+        ],
       },
     });
 
-    // 2) Compute total liabilities
-    const groupsWithTotals = rawGroups.map((g) => {
-      const totalLiabilities = g.liabilities.reduce((acc, item) => {
-        // Summation of `item.liabilities`
-        return acc + (item.liabilities ?? 0);
-      }, 0);
+    // Fetch matching rows
+    const rawGroups = await prisma.relegatedGroup.findMany({
+      skip,
+      take,
+      where: {
+        OR: [
+          { rimNumber: { contains: filter, mode: "insensitive" } },
+          {
+            generalInformation: {
+              branch: { contains: filter, mode: "insensitive" },
+            },
+          },
+        ],
+      },
+      orderBy: {
+        [orderByField]: sortOrder,
+      },
+      include: {
+        generalInformation: true,
+        debtors: true,
+        liabilities: true,
+        securities: true,
+        unchargedAccounts: true,
+        connectedAccounts: true,
+      },
+    });
+
+    // Compute any aggregates (totalLiabilities, totalSecuritiesValue, etc.)
+    const groupsWithAggregates = rawGroups.map((group) => {
+      const totalLiabilities = group.liabilities.reduce(
+        (sum, li) => sum + (li.liabilities || 0),
+        0
+      );
+
+      const totalSecuritiesValue = group.securities.reduce(
+        (sum, sec) => sum + (sec.mv || 0),
+        0
+      );
+
+      // total # of accounts
+      const totalAccounts =
+        (group.unchargedAccounts?.length || 0) +
+        (group.connectedAccounts?.length || 0);
 
       return {
-        ...g,
+        ...group,
         totalLiabilities,
+        totalSecuritiesValue,
+        totalAccounts,
       };
     });
 
+    // Return data + pagination metadata
     return NextResponse.json({
       success: true,
-      data: groupsWithTotals,
+      data: groupsWithAggregates,
+      meta: {
+        page,
+        pageSize: take,
+        totalCount,
+        totalPages: Math.ceil(totalCount / take),
+      },
     });
   } catch (error) {
-    console.error("/GET ccuClassifiedDebts error:", error);
+    console.error("GET /ccuClassifiedDebts Error:", error);
     return NextResponse.json(
       {
         success: false,
