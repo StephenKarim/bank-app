@@ -43,7 +43,9 @@ export default function SummaryPage({
    * Returns 0 if parsing fails.
    */
   const toNumber = (val: string | number): number => {
-    const parsed = parseFloat(String(val));
+    // Convert to string, remove commas, then parse
+    const cleaned = String(val).replace(/,/g, "");
+    const parsed = parseFloat(cleaned);
     return isNaN(parsed) ? 0 : parsed;
   };
 
